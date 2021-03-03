@@ -1,0 +1,698 @@
+<html>
+
+<head>
+    <meta name="Description" content="Sistemas de negicios">
+    <title>Home </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="estilos.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <link href="https://materializecss.com/css/prism.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="wrapper">
+        <div class="overlay"></div>
+        <!-- Sidebar -->
+        <nav class="navbar navbar-inverse fixed-top" id="sidebar-wrapper" role="navigation">
+            <ul class="nav sidebar-nav">
+                <div class="sidebar-header">
+                    <div class="sidebar-brand">
+                        <a href="#">PWC</a>
+                    </div>
+                </div>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="Librerias.html">Librerias</a></li>
+                <li><a href="sesion1.html">Unidad 1</a></li>
+                <li><a href="sesion2.html">Unidad 2</a></li>
+                <li><a href="sesion3.html">Unidad 3</a></li>
+                <li><a href="sesion4.html">Unidad 4</a></li>
+                <li><a href="sesion5.html">Unidad 5</a></li>
+            </ul>
+        </nav>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <button type="button" class="hamburger animated fadeInLeft is-closed" data-toggle="offcanvas">
+        <span class="hamb-top"></span>
+        <span class="hamb-middle"></span>
+        <span class="hamb-bottom"></span>
+      </button>
+            <div class="container">
+                <div class="col-sm-12">
+                    <h2 class="text-center">Unidad 1</h2>
+                    <div id="accordion">
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <a class="card-link" id="1" data-toggle="collapse" href="#collapseOne" aria-expanded="true">
+                  Admin SDK Directory Service
+                </a>
+                            </div>
+                            <div id="collapseOne" class="collapse show" data-parent="#accordion">
+                                <div class="card-body">
+                                    <pre class="  language-javascript">
+                    <code class="  language-javascript">
+                      /**
+Ejemplos de cada uno y como utilizarse!
+ * Lists all the users in a domain sorted by first name.
+ */
+function listAllUsers() {
+  var rows = [];
+  var pageToken;
+  var page;
+  var query = "orgTitle:'Implementation Specialist'"
+  do {
+    page = AdminDirectory.Users.list({
+      domain: 'ptree.com.mx',
+      maxResults: 100,
+       query: query,
+      pageToken: pageToken
+    });
+    var users = page.users;
+    if (users) {
+      for (var i = 0; i < users.length; i++) {
+        var user = users[i];
+        if(user.organizations){
+        var title=user.organizations[0].title
+        }
+       var row = [
+           user.name.fullName, user.primaryEmail,title
+        ];
+        rows.push(row);        
+      }
+    } else {
+      Logger.log('No users found.');
+    }
+    pageToken = page.nextPageToken;
+  } while (pageToken);
+if (rows.length > 0) {
+    var spreadsheet = SpreadsheetApp.create('G Suite User Report');
+    var sheet = spreadsheet.getActiveSheet();
+
+    // Append the headers.
+    var headers = ['Nombre', 'Correo', 'Puesto'];
+    sheet.appendRow(headers);
+
+    // Append the results.
+    sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+
+    Logger.log('Report spreadsheet created: %s', spreadsheet.getUrl());
+  } else {
+    Logger.log('No results returned.');
+  }
+}                                  
+                    </code>
+                   </pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <a class="collapsed card-link" id="2" data-toggle="collapse" href="#collapseTwo">
+                  Admin SDK Reports Service
+                </a>
+                            </div>
+                            <div id="collapseTwo" class="collapse" data-parent="#accordion">
+                                <div class="card-body">
+                                    <pre class="  language-javascript">
+                    <code class="  language-javascript">                                        
+                      /**
+                      * Generates a login activity report for the last week as a spreadsheet. The
+                      * report includes the time, user, and login result.
+                      */
+                     function generateLoginActivityReport() {
+                       var now = new Date();
+                       var oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                       var startTime = oneWeekAgo.toISOString();
+                       var endTime = now.toISOString();
+                     
+                       var rows = [];
+                       var pageToken;
+                       var page;
+                       do {
+                         page = AdminReports.Activities.list('all', 'meet', {
+                           startTime: startTime,
+                           endTime: endTime,
+                           maxResults: 500,
+                           pageToken: pageToken
+                         });
+                         var items = page.items;
+                         if (items) {
+                           for (var i = 0; i < items.length; i++) {
+                             var item = items[i];
+                             var row = [
+                               new Date(item.id.time),
+                               item.actor.email,
+                               item.events[0].name
+                             ];
+                             rows.push(row);
+                           }
+                         }
+                         pageToken = page.nextPageToken;
+                       } while (pageToken);
+                     
+                       if (rows.length > 0) {
+                         var spreadsheet = SpreadsheetApp.create('G Suite Login Report');
+                         var sheet = spreadsheet.getActiveSheet();
+                     
+                         // Append the headers.
+                         var headers = ['Time', 'User', 'Login Result'];
+                         sheet.appendRow(headers);
+                     
+                         // Append the results.
+                         sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+                     
+                         Logger.log('Report spreadsheet created: %s', spreadsheet.getUrl());
+                       } else {
+                         Logger.log('No results returned.');
+                       }
+                     }              
+                    </code>
+                   </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <a class="collapsed card-link" id="3" data-toggle="collapse" href="#collapseThree">
+                  BigQuery API
+                </a>
+                            </div>
+                            <div id="collapseThree" class="collapse" data-parent="#accordion">
+                                <div class="card-body">
+                                    <pre class="  language-javascript">
+                    <code class="  language-javascript">                                                                                                            
+
+                      var projectId = 'copper-bq-sql'; //Obtiene el proyecto de GC
+                      var datasetId = 'CursoPWC'; //Obtiene el dataset de Big query
+                      var setTable = 'Cursos'
+                      
+                      function setData() {
+                          var row = [];
+                          var obj = {
+                              json: {
+                                  "Nombre": "Sergio Maya",
+                                  "Fecha": "09/11/2020",
+                                  "Edad": "25"
+                              }
+                          }
+                          row.push(obj)
+                          var resource = {
+                              "rows": row
+                          }
+                          BigQuery.Tabledata.insertAll(resource, projectId, datasetId, setTable) //Agrega los recursos enviados a la tabla correspondiente          
+                      }
+                    </code>
+                  </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <a class="collapsed card-link" id="4" data-toggle="collapse" href="#collapse4">
+                  Calendar API
+                </a>
+                            </div>
+                            <div id="collapse4" class="collapse" data-parent="#accordion">
+                                <div class="card-body">
+                                    <pre class="  language-javascript">
+                    <code class="  language-javascript">                                        
+                      function newCalendar(sala) {
+                        //sala="Prueba"
+                        var calendar = CalendarApp.createCalendar("Calendar PWC"); //Crea el calendar con el nombre especifico  
+                        var id = calendar.getId() //Obtiene el id del calendar para guardarlo
+                        var resource = {
+                         "role": "owner",
+                          "scope": {
+                            "type": "domain",
+                            "value": "pwc.com"
+                          }     
+                        }; 
+                        Calendar.Acl.insert(resource, id);  
+                      }         
+                    </code>
+                  </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <a class="collapsed card-link" id="5" data-toggle="collapse" href="#collapse5">
+                  Drive Activity API
+                </a>
+                            </div>
+                            <div id="collapse5" class="collapse" data-parent="#accordion">
+                                <div class="card-body">
+                                    <pre class="  language-javascript">
+                    <code class="  language-javascript">    
+                      /**
+ * Lists activity for a Drive user.
+ */
+function listDriveActivity() {
+  var request = {pageSize: 2};
+  var response = DriveActivity.Activity.query(request);
+  var activities = response.activities;
+  if (activities && activities.length > 0) {
+    Logger.log('Recent activity:');
+    for (var i = 0; i < activities.length; i++) {
+      var activity = activities[i];
+      var time = getTimeInfo(activity);
+      var action = getActionInfo(activity.primaryActionDetail);
+      var actors = activity.actors.map(getActorInfo);
+      var targets = activity.targets.map(getTargetInfo);
+      Logger.log(
+          '%s: %s, %s, %s', time, truncated(actors), action,
+          truncated(targets));
+    }
+  } else {
+    Logger.log('No activity.');
+  }
+}
+
+/** Returns a string representation of the first elements in a list. */
+function truncated(array, opt_limit) {
+  var limit = opt_limit || 2;
+  var contents = array.slice(0, limit).join(', ');
+  var more = array.length > limit ? ', ...' : '';
+  return '[' + contents + more + ']';
+}
+
+/** Returns the name of a set property in an object, or else "unknown". */
+function getOneOf(object) {
+  for (var key in object) {
+    return key;
+  }
+  return 'unknown';
+}
+
+/** Returns a time associated with an activity. */
+function getTimeInfo(activity) {
+  if ('timestamp' in activity) {
+    return activity.timestamp;
+  }
+  if ('timeRange' in activity) {
+    return activity.timeRange.endTime;
+  }
+  return 'unknown';
+}
+
+/** Returns the type of action. */
+function getActionInfo(actionDetail) {
+  return getOneOf(actionDetail);
+}
+
+/** Returns user information, or the type of user if not a known user. */
+function getUserInfo(user) {
+  if ('knownUser' in user) {
+    var knownUser = user.knownUser;
+    var isMe = knownUser.isCurrentUser || false;
+    return isMe ? 'people/me' : knownUser.personName;
+  }
+  return getOneOf(user);
+}
+
+/** Returns actor information, or the type of actor if not a user. */
+function getActorInfo(actor) {
+  if ('user' in actor) {
+    return getUserInfo(actor.user)
+  }
+  return getOneOf(actor);
+}
+
+/** Returns the type of a target and an associated title. */
+function getTargetInfo(target) {
+  if ('driveItem' in target) {
+    var title = target.driveItem.title || 'unknown';
+    return 'driveItem:"' + title + '"';
+  }
+  if ('drive' in target) {
+    var title = target.drive.title || 'unknown';
+    return 'drive:"' + title + '"';
+  }
+  if ('fileComment' in target) {
+    var parent = target.fileComment.parent || {};
+    var title = parent.title || 'unknown';
+    return 'fileComment:"' + title + '"';
+  }
+  return getOneOf(target) + ':unknown';
+}                                                                      
+                    </code>
+                   </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <a class="collapsed card-link" id="6" data-toggle="collapse" href="#collapse6">
+                  Sheets API
+                </a>
+                            </div>
+                            <div id="collapse6" class="collapse" data-parent="#accordion">
+                                <div class="card-body">
+                                    <pre class="  language-javascript">
+                    <code class="  language-javascript">     
+                      /**
+ * Write to multiple, disjoint data ranges.
+ * @param {string} spreadsheetId The spreadsheet ID to write to.
+ */
+function writeToMultipleRanges(spreadsheetId) {
+  spreadsheetId="1U7uCwksKaQFe2Df9rOcOVcdvlzvFeX1jYbhsAM4qRME"
+ var columnAValues = [
+    ['Nombre'],['Edad'],['Fecha Nac'],['Sueldo'],['Puesto'],['Sueldo diario']
+  ];
+  var rowValues = [
+    ['Sergio', '26', '09/11/1994',15000,"Developer","=1500/30"],
+    ['Jeerel', '26', '07/09/1994',15000,"Developer","=1500/30"],
+    ['Cesar', '27', '06/01/1993',15000,"Developer","=1500/30"]
+  ];
+
+  var request = {
+    'valueInputOption': 'USER_ENTERED',
+    'data': [
+      {
+        'range': 'Sheet1!A1:F1',
+        'majorDimension': 'COLUMNS',
+        'values': columnAValues
+      },
+      {
+        'range': 'Sheet1!A2:F4',
+        'majorDimension': 'ROWS',
+        'values': rowValues
+      }
+    ]
+  };
+
+  var response = Sheets.Spreadsheets.Values.batchUpdate(request, spreadsheetId);
+  Logger.log(response);
+}
+
+/**
+ * Add a pivot table.
+ * @param {string} spreadsheetId The spreadsheet ID to add the pivot table to.
+ * @param {string} pivotSourceDataSheetId The sheet ID to get the data from.
+ * @param {string} destinationSheetId The sheet ID to add the pivot table to.
+ */
+function addPivotTable(spreadsheetId, pivotSourceDataSheetId, destinationSheetId) {
+  spreadsheetId="1ESXbjIzxsV8QIkJtFfBwk6uhuce8cGJOskdXNIENofg";
+  pivotSourceDataSheetId="11U7uCwksKaQFe2Df9rOcOVcdvlzvFeX1jYbhsAM4qRME";
+  destinationSheetId="1t2h5xfy0tluu_iWkyOvJUDr1MAKpBIJiRqiuLuSvaXk";
+  var requests = [{
+    'updateCells': {
+      'rows': {
+        'values': [
+          {
+            'pivotTable': {
+              'source': {
+                'sheetId': pivotSourceDataSheetId,
+                'startRowIndex': 0,
+                'startColumnIndex': 0,
+                'endRowIndex': 20,
+                'endColumnIndex': 7
+              },
+              'rows': [
+                {
+                  'sourceColumnOffset': 0,
+                  'showTotals': true,
+                  'sortOrder': 'ASCENDING',
+                  'valueBucket': {
+                    'buckets': [
+                      {
+                        'stringValue': 'West'
+                      }
+                    ]
+                  }
+                },
+                {
+                  'sourceColumnOffset': 1,
+                  'showTotals': true,
+                  'sortOrder': 'DESCENDING',
+                  'valueBucket': {}
+                }
+              ],
+              'columns': [
+                {
+                  'sourceColumnOffset': 4,
+                  'sortOrder': 'ASCENDING',
+                  'showTotals': true,
+                  'valueBucket': {}
+                }
+              ],
+              'values': [
+                {
+                  'summarizeFunction': 'SUM',
+                  'sourceColumnOffset': 3
+                }
+              ],
+              'valueLayout': 'HORIZONTAL'
+            }
+          }
+        ]
+      },
+      'start': {
+        'sheetId': destinationSheetId,
+        'rowIndex': 49,
+        'columnIndex': 0
+      },
+      'fields': 'pivotTable'
+    }
+  }];
+
+  var response =
+      Sheets.Spreadsheets.batchUpdate({'requests': requests}, spreadsheetId);
+  // The Pivot table will appear anchored to cell A50 of the destination sheet.
+}
+
+/**
+ * Add a new sheet with some properties.
+ * @param {string} spreadsheetId The spreadsheet ID.
+ */
+function addSheet(spreadsheetId) {
+  spreadsheetId="1U7uCwksKaQFe2Df9rOcOVcdvlzvFeX1jYbhsAM4qRME"
+  var requests = [{
+    'addSheet': {
+      'properties': {
+        'title': 'Depositss',
+        'gridProperties': {
+          'rowCount': 20,
+          'columnCount': 12
+        },
+        'tabColor': {
+          'red': 1.0,
+          'green': 0.3,
+          'blue': 0.4
+        }
+      }
+    }
+  }];
+
+  var response =
+      Sheets.Spreadsheets.batchUpdate({'requests': requests}, spreadsheetId);
+  Logger.log('Created sheet with ID: ' +
+      response.replies[0].addSheet.properties.sheetId);
+}
+                                                                     
+                    </code>
+                   </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <a class="collapsed card-link" id="7" data-toggle="collapse" href="#collapse7">
+                  Drive API
+                </a>
+                            </div>
+                            <div id="collapse7" class="collapse" data-parent="#accordion">
+                                <div class="card-body">
+                                    <pre class="  language-javascript">
+                    <code class="  language-javascript">        
+                      /**
+ * Uploads a new file to the user's Drive.
+ */
+function uploadFile() {
+  var image = UrlFetchApp.fetch('https://ptreesys.mx/img/PTree.png').getBlob();
+  var file = {
+    title: 'PtreeMex.png',
+    mimeType: 'image/png'
+  };
+  file = Drive.Files.insert(file, image);
+  Logger.log('ID: %s, File size (bytes): %s', file.id, file.fileSize);
+}
+
+/**
+ * Lists the top-level folders in the user's Drive.
+ */
+function listRootFolders() {
+  var query = '"root" in parents and trashed = false and ' +
+      'mimeType = "application/vnd.google-apps.folder"';
+  var folders;
+  var pageToken;
+  do {
+    folders = Drive.Files.list({
+      q: query,
+      maxResults: 100,
+      pageToken: pageToken
+    });
+    if (folders.items && folders.items.length > 0) {
+      for (var i = 0; i < folders.items.length; i++) {
+        var folder = folders.items[i];
+        Logger.log('%s (ID: %s)', folder.title, folder.id);
+      }
+    } else {
+      Logger.log('No folders found.');
+    }
+    pageToken = folders.nextPageToken;
+  } while (pageToken);
+}                                                                  
+                    </code>
+                   </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <a class="collapsed card-link" id="8" data-toggle="collapse" href="#collapse8">
+                  Gmail API
+                </a>
+                            </div>
+                            <div id="collapse8" class="collapse" data-parent="#accordion">
+                                <div class="card-body">
+                                    <pre class="  language-javascript">
+                    <code class="  language-javascript">    
+                      function gmailData() {
+                        var response =Gmail.Users.getProfile("me");
+                        console.log(response)
+                       var spreadsheetId="1U7uCwksKaQFe2Df9rOcOVcdvlzvFeX1jYbhsAM4qRME"
+                        // Specify some values to write to the sheet.
+                        var columnAValues = [['emailAddress','Total de mensajes','Total de Hilos']];
+                        var rowValues = [[
+                          response.emailAddress,
+                          response.messagesTotal,
+                          response.threadsTotal
+                        ]];
+                          var request = {
+                          'valueInputOption': 'USER_ENTERED',
+                          'data': [
+                            {
+                              'range': 'Sheet1!A1:A3',
+                              'majorDimension': 'COLUMNS',
+                              'values': columnAValues
+                            },
+                            {
+                              'range': 'Sheet1!B1:B3',
+                              'majorDimension': 'COLUMNS',
+                              'values': rowValues
+                            }
+                          ]
+                        };
+                      
+                        var response = Sheets.Spreadsheets.Values.batchUpdate(request, spreadsheetId);
+                      }
+                                                                                            
+                    </code>
+                   </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <a class="collapsed card-link" id="9" data-toggle="collapse" href="#collapse9">
+                  Docs API
+                </a>
+                            </div>
+                            <div id="collapse9" class="collapse" data-parent="#accordion">
+                                <div class="card-body">
+                                    <pre class="  language-javascript">
+                    <code class="  language-javascript">     
+                      /**
+ * Create a new document.
+ */
+function createDocument() {
+  var document = Docs.Documents.create({'title': 'My New Document'});
+  Logger.log('Created document with ID: ' + document.documentId);
+}
+
+
+ /**
+ * Insert text at the beginning of the document and then style the inserted
+ * text.
+ * @param {string} documentId The document the text is inserted into.
+ * @param {string} text The text to insert into the document.
+ */
+function insertAndStyleText(documentId, text) {
+  documentId="1yhsuqlQtXAKptnCmUCPDBcSLjj_bEHPZcTCKTSSqXEU";
+  text="OK!"
+  var requests = [{
+    insertText: {
+      location: {
+        index: 1
+      },
+      text: text
+    }
+  },
+  {
+    updateTextStyle: {
+      range: {
+        startIndex: 1,
+        endIndex: text.length + 1
+      },
+      text_style: {
+        fontSize: {
+          magnitude: 24,
+          unit: 'PT'
+        },
+        weightedFontFamily: {
+          fontFamily: 'Calibri'
+        }
+      },
+      fields: 'weightedFontFamily, fontSize'
+    }
+  }];
+  Docs.Documents.batchUpdate({'requests': requests}, documentId);
+}                                                                     
+                    </code>
+                   </pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <a class="collapsed card-link" id="10" data-toggle="collapse" href="#collapse10">
+                  Slides API
+                </a>
+                            </div>
+                            <div id="collapse10" class="collapse" data-parent="#accordion">
+                                <div class="card-body">
+                                    <pre class="  language-javascript">
+                    <code class="  language-javascript">        
+                                                                                        
+                    </code>
+                   </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-1"><br></div>
+    </div>
+    <!-- /#wrapper -->
+    <script src="https://materializecss.com/docs/js/prism.js"></script>
+    <!-- jQuery and JS bundle w/ Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-firestore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
+    <script type="text/javascript" src="javascript.js"></script>
+</body>
+
+</html>

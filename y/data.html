@@ -1,0 +1,87 @@
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyDgiOGErCgEvImHaa2t1TzFHXC_9mn9pDE",
+        authDomain: "sys-38136007016339105748558399.firebaseapp.com",
+        databaseURL: "https://sys-38136007016339105748558399-default-rtdb.firebaseio.com",
+        projectId: "sys-38136007016339105748558399",
+        storageBucket: "sys-38136007016339105748558399.appspot.com",
+        messagingSenderId: "1057795384948",
+        appId: "1:1057795384948:web:03d9270436879de5669321",
+        measurementId: "G-5PPXV7PW5V"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    var controllerApp = angular.module('ctrl', ['firebase']);
+    controllerApp.controller('ctrlIndex', function($scope, Service, $firebaseObject, $firebaseArray) {
+        // $scope.user="sergio@ptree.com.mx"
+        $scope.array = [];
+        $scope.getEdad = function() {
+            console.log("Entro")
+            $scope.obj.edad = new Date().getFullYear() - $scope.obj.date.getFullYear();
+        }
+        $scope.getUser = function() {
+            $scope.texto = "Sergio"
+            google.script.run.withSuccessHandler(function(data) {
+                $scope.user = data;
+                $scope.$apply();
+                $scope.getUser();
+            }).withFailureHandler(function(msg) { //Si no se puede ejecutar la funcion correctamente				
+                alert(msg) //Manda mensaje de error
+            }).getUser();
+        }
+        $scope.getUser();
+        $scope.getUser = function() {
+            $scope.rootUser = firebase.database().ref("Data/Perfiles");
+            $scope.dataUsers = $firebaseArray($scope.rootUser);
+            $scope.dataUsers.$loaded().then(function() {
+                console.log("Cargado")
+                console.log($scope.dataUsers)
+            })
+        }
+        $scope.addUser = function() {
+            //$scope.array.push($scope.obj)
+            //$scope.dataUsers.$add($scope.obj).
+            $scope.rootUser.child("2").set($scope.obj).then(function() {
+                $scope.obj = {};
+            })
+        }
+        $scope.getName = function() {
+            const rootName = firebase.database().ref("Data/Perfiles/0");
+            $scope.myName = $firebaseObject(rootName);
+            $scope.myName.$loaded().then(function() {
+                console.log($scope.myName)
+            })
+        }
+        $scope.deleteFirebase = function() {
+            $scope.myName.$remove().then(function() {
+                alert("Editado");
+            })
+        }
+        $scope.saveFirebase = function() {
+            $scope.myName.$save().then(function() {
+                alert("Editado");
+            })
+        }
+        $scope.deleteUser = function(id) {
+            $scope.rootUserDelete = firebase.database().ref("Data/Perfiles/" + id);
+            $scope.dataUsersDelete = $firebaseObject($scope.rootUserDelete);
+            $scope.dataUsersDelete.$loaded().then(function() {
+                    $scope.dataUsersDelete.$remove().then(function() {
+                        alert('Usuario Eliminado satisfactoriamente')
+                    });
+                })
+                /*
+                console.log(id)
+                var index=$scope.dataUsers.$indexFor(id)
+                $scope.dataUsers.$remove(index).then(function (){
+                console.log("Eliminado")
+                })
+                */
+        }
+        $scope.filter = function(item) {
+            if (item.correo != $scope.user) {
+                return item;
+            }
+        }
+    })
+</script>
